@@ -4,6 +4,6 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 from app.core.config import settings
 
 engine = create_engine(settings.DB_URL, echo=True)
-session = Session(bind=engine)
+session = Session(bind=engine, expire_on_commit=False)
 SelectOfScalar.inherit_cache = True
 Select.inherit_cache = True
