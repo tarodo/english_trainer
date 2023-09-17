@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     DB_URL: str = "sqlite:///db_test.db"
 
+    FIRST_SUPERUSER: str
+    FIRST_SUPERUSER_PASSWORD: str
+
     EMAIL_TEST_USER: str = "test@test.com"
 
     class Config:
