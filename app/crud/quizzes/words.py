@@ -3,7 +3,7 @@ import logging
 from sqlmodel import Session
 
 from app.crud import common
-from app.models import Word, WordInDB, WordUpdate
+from app.models import Word, WordInDB, WordSet, WordSetInDB, WordUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -26,3 +26,8 @@ def update(db: Session, db_obj: Word, payload: WordUpdate) -> Word:
 def remove(db: Session, db_obj: Word) -> Word:
     """Remove word from DB"""
     return common.remove(db, db_obj)
+
+
+def create_set(db: Session, payload: WordSetInDB) -> WordSet | None:
+    """Create a set for words"""
+    return common.create(db, WordSet, payload)

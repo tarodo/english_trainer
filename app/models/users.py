@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import WordSet
 
 
 class UserBase(SQLModel):
@@ -13,6 +18,8 @@ class User(UserBase, table=True):  # type: ignore
 
     id: int = Field(primary_key=True)
     password: str = Field(...)
+
+    word_sets: list["WordSet"] = Relationship(back_populates="owner")
 
 
 class UserIn(UserBase):

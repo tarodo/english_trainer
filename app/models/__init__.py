@@ -5,6 +5,7 @@ from .quizzes import (
     WordOut,
     WordSet,
     WordSetConnector,
+    WordSetInDB,
     WordUpdate,
 )
 from .tools import responses

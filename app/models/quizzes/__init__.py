@@ -5,5 +5,6 @@ from .words import (
     WordOut,
     WordSet,
     WordSetConnector,
+    WordSetInDB,
     WordUpdate,
 )

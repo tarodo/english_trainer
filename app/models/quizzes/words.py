@@ -1,6 +1,10 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import User
 
 
 class WordSetConnector(SQLModel, table=True):  # type: ignore
@@ -39,11 +43,20 @@ class WordOut(Word):
     pass
 
 
-class WordSet(SQLModel, table=True):  # type: ignore
+class WordSetBase(SQLModel):
+    title: str
+    owner_id: int = Field(foreign_key="et_user.id")
+
+
+class WordSet(WordSetBase, table=True):  # type: ignore
     __tablename__ = "word_set"
 
     id: int = Field(primary_key=True)
-    title: str
-    owner_id: int = Field(foreign_key="et_user.id")
     words: list[Word] = Relationship(back_populates="sets", link_model=WordSetConnector)
+
+    owner: "User" = Relationship(back_populates="word_sets")
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class WordSetInDB(WordSetBase):
+    pass
