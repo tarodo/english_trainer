@@ -1,54 +1,64 @@
 import logging
-from typing import Type
+from typing import Annotated, Protocol, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy.sql import Select
 from sqlmodel import Session, SQLModel, select
 
 logger = logging.getLogger(__name__)
 
 
-def read_by_id(db: Session, Model: Type[SQLModel], elem_id: int) -> SQLModel | None:
+class HasId(Protocol):
+    id: int
+
+
+T = TypeVar("T", bound=SQLModel)
+SQLModelWithId = TypeVar("SQLModelWithId", bound=Annotated[SQLModel, HasId])
+
+
+def read_by_id(
+    db: Session, model: Type[SQLModelWithId], elem_id: int
+) -> SQLModelWithId | None:
     """Read one element by id"""
-    logger.info(f"{type(Model)=}")
-    elem = select(Model).where(Model.id == elem_id)
+    logger.info(f"{type(model)=}")
+    elem = select(model).where(model.id == elem_id)
     elem = db.exec(elem).one_or_none()
     return elem
 
 
 def read_by_field(
-    db: Session, Field: InstrumentedAttribute, value: object
+    db: Session, field: InstrumentedAttribute, value: object
 ) -> SQLModel | None:
     """Read one element by field value"""
-    elem = select(Field.class_).where(Field == value)
+    elem = select(field.class_).where(field == value)
     elem = db.exec(elem).one_or_none()
     return elem
 
 
 def read_by_field_many(
-    db: Session, Field: InstrumentedAttribute, value: object
+    db: Session, field: InstrumentedAttribute, value: object
 ) -> list[SQLModel] | None:
     """Read several elements by field value"""
-    elem = select(Field.class_).where(Field == value)
+    elem = select(field.class_).where(field == value)
     elem = db.exec(elem).all()
     return elem
 
 
-def create(db: Session, Model: Type[SQLModel], payload: SQLModel) -> SQLModel:
+def create(db: Session, model: Type[T], payload: SQLModel) -> T | None:
     """Create an element"""
     try:
-        element = Model(**payload.dict())
+        element = model(**payload.dict())
         db.add(element)
         db.commit()
         db.refresh(element)
         return element
     except IntegrityError:
         db.rollback()
+        return None
 
 
-def update(db: Session, db_obj: SQLModel, payload: SQLModel) -> SQLModel:
+def update(db: Session, db_obj: T, payload: SQLModel) -> T:
     """Update element's data"""
     obj_data = jsonable_encoder(db_obj)
     update_data = payload.dict(exclude_unset=True, exclude_none=True)
@@ -62,12 +72,8 @@ def update(db: Session, db_obj: SQLModel, payload: SQLModel) -> SQLModel:
     return db_obj
 
 
-def remove(db: Session, db_obj: SQLModel) -> SQLModel:
+def remove(db: Session, db_obj: T) -> T:
     """Remove element from DB"""
     db.delete(db_obj)
     db.commit()
     return db_obj
-
-
-def read_all_select(Model: Type[SQLModel]) -> Select:
-    return select(Model)
