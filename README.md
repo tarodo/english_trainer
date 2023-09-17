@@ -26,5 +26,5 @@ docker-compose exec web alembic upgrade head
 
 ## New migration
 ```shell
-docker-compose exec quiz-back alembic revision --autogenerate -m "message"
+docker-compose exec web alembic revision --autogenerate -m "message"
 ```

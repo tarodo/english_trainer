@@ -7,7 +7,7 @@ class UserBase(SQLModel):
     is_admin: bool = Field(default=False, nullable=False)
 
 
-class User(UserBase, table=True):
+class User(UserBase, table=True):  # type: ignore
     __tablename__ = "et_user"
 
     id: int = Field(primary_key=True)
