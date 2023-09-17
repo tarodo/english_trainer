@@ -23,11 +23,19 @@ class Word(WordBase, table=True):  # type: ignore
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class WordInApi(WordBase):
+    pass
+
+
 class WordInDB(WordBase):
     pass
 
 
 class WordUpdate(WordBase):
+    pass
+
+
+class WordOut(Word):
     pass
 
 

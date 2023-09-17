@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api import login, users
+from app.api.quizzes import words
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(users.router, prefix="/users", tags=["users"])
+    application.include_router(words.router, prefix="/words", tags=["words"])
     application.include_router(login.router, tags=["login"])
     logger.info("Start project")
     return application
