@@ -13,7 +13,7 @@ def user_authentication_headers(
 ) -> Dict[str, str]:
     """Return headers for the creds"""
     data = {"username": email, "password": password}
-    r = client.post(f"/login/access-token", data=data)
+    r = client.post("/login/access-token", data=data)
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
