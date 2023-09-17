@@ -10,14 +10,25 @@ class WordSetConnector(SQLModel, table=True):  # type: ignore
     set_id: int = Field(foreign_key="word_set.id", primary_key=True)
 
 
-class Word(SQLModel, table=True):  # type: ignore
+class WordBase(SQLModel):
+    word: str = Field(..., min_length=1)
+    translate: str = Field(..., min_length=1)
+
+
+class Word(WordBase, table=True):  # type: ignore
     id: int = Field(primary_key=True)
-    word: str
-    translate: str
     sets: list["WordSet"] = Relationship(
         back_populates="words", link_model=WordSetConnector
     )
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class WordInDB(WordBase):
+    pass
+
+
+class WordUpdate(WordBase):
+    pass
 
 
 class WordSet(SQLModel, table=True):  # type: ignore
