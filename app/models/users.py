@@ -5,6 +5,7 @@ from sqlmodel import Field, SQLModel
 class UserBase(SQLModel):
     email: EmailStr = Field(index=True, sa_column_kwargs={"unique": True})
     is_admin: bool = Field(default=False, nullable=False)
+    is_bot: bool = Field(default=False, nullable=False)
 
 
 class User(UserBase, table=True):  # type: ignore
@@ -25,4 +26,5 @@ class UserOut(UserBase):
 class UserUpdate(SQLModel):
     email: EmailStr | None = None
     is_admin: bool | None = None
+    is_bot: bool | None = None
     password: str | None = None
