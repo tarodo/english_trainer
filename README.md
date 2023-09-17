@@ -1,5 +1,5 @@
-# FastAPI Auth
-Clear project with auth model
+# English Trainer
+Backend platform for English training
 
 ## .env
 Create `.env` file
@@ -12,13 +12,19 @@ Create `db/.env` file
 - POSTGRES_PASSWORD - str
 
 ## Test
-1. `python -m pytest --cov="."`
-
-## Local Run
-1. `pip install -r requirements.txt`
-2. `alembic upgrade head`
-3. `python main.py`
+```shell
+docker-compose exec -it web python -m pytest --cov="."
+```
 
 ## Docker-compose
-1. `docker-compose up --build`
-2. `docker-compose exec web alembic upgrade head`
+```shell
+docker-compose up --build
+```
+```shell
+docker-compose exec web alembic upgrade head
+```
+
+## New migration
+```shell
+docker-compose exec quiz-back alembic revision --autogenerate -m "message"
+```
