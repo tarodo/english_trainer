@@ -13,5 +13,5 @@ class ErrorMessage(BaseModel):
 
 
 responses: dict[int | str, dict[str, Any]] = {
-    400: {"model": ErrorMessage, "description": "A custom error message"}
+    400: {"model": ErrorMessage, "description": "Bad Request"}
 }
