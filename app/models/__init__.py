@@ -4,8 +4,10 @@ from .quizzes import (
     WordInDB,
     WordOut,
     WordSet,
-    WordSetConnector,
+    WordSetInApi,
     WordSetInDB,
+    WordSetOut,
+    WordSetUpdate,
     WordUpdate,
 )
 from .tools import responses

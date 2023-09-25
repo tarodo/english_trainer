@@ -7,23 +7,16 @@ if TYPE_CHECKING:
     from app.models import User
 
 
-class WordSetConnector(SQLModel, table=True):  # type: ignore
-    __tablename__ = "word_set_connector"
-
-    word_id: int = Field(foreign_key="word.id", primary_key=True)
-    set_id: int = Field(foreign_key="word_set.id", primary_key=True)
-
-
 class WordBase(SQLModel):
     word: str = Field(..., min_length=1)
     translate: str = Field(..., min_length=1)
+    set_id: int = Field(foreign_key="word_set.id")
 
 
 class Word(WordBase, table=True):  # type: ignore
     id: int = Field(primary_key=True)
-    sets: list["WordSet"] = Relationship(
-        back_populates="words", link_model=WordSetConnector
-    )
+
+    sets: "WordSet" = Relationship(back_populates="words")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -52,11 +45,23 @@ class WordSet(WordSetBase, table=True):  # type: ignore
     __tablename__ = "word_set"
 
     id: int = Field(primary_key=True)
-    words: list[Word] = Relationship(back_populates="sets", link_model=WordSetConnector)
+    words: list[Word] = Relationship(back_populates="sets")
 
     owner: "User" = Relationship(back_populates="word_sets")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class WordSetInApi(WordSetBase):
+    pass
+
+
 class WordSetInDB(WordSetBase):
     pass
+
+
+class WordSetUpdate(WordSetBase):
+    pass
+
+
+class WordSetOut(WordSetBase):
+    id: int

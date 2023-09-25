@@ -4,7 +4,9 @@ from .words import (
     WordInDB,
     WordOut,
     WordSet,
-    WordSetConnector,
+    WordSetInApi,
     WordSetInDB,
+    WordSetOut,
+    WordSetUpdate,
     WordUpdate,
 )
