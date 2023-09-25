@@ -63,6 +63,22 @@ def get_word(
     return word
 
 
+@router.delete("/{words_id}/", status_code=200, responses=responses)
+def remove_word(
+    word_id: int,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> None:
+    word = words.read_by_id(db, word_id)
+    if not word:
+        if current_user.is_admin:
+            raise_400(WordErrors.NoWordID)
+        else:
+            raise_400(WordErrors.NoRightsForUser)
+    else:
+        words.remove(db, word)
+
+
 @router.post("/sets", response_model=WordSetOut, status_code=200, responses=responses)
 def create_word_set(
     payload: WordSetInApi,
@@ -106,3 +122,19 @@ def get_word_set(
                 raise_400(WordErrors.NoRightsForUser)
 
     return word_set
+
+
+@router.delete("/{set_id}/", status_code=200, responses=responses)
+def remove_word_set(
+    set_id: int,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> None:
+    word_set = words.read_set_by_id(db, set_id)
+    if not word_set:
+        if current_user.is_admin:
+            raise_400(WordErrors.NoWordID)
+        else:
+            raise_400(WordErrors.NoRightsForUser)
+    else:
+        words.remove_set(db, word_set)
