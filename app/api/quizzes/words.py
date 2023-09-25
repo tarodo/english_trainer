@@ -27,6 +27,7 @@ class WordErrors(Enum):
     CreationError = "An error occurred in creating an entity"
     NoUserID = "There is no user with ID"
     NoSetID = "There is no set with ID"
+    NoWordID = "There is no word with ID"
 
 
 @router.post("/", response_model=WordOut, status_code=200, responses=responses)
@@ -50,6 +51,18 @@ def create_word(
     return word
 
 
+@router.get("/{word_id}/", response_model=WordOut, status_code=200, responses=responses)
+def get_word(
+    word_id: int,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> WordOut | None:
+    word = words.read_by_id(db, word_id)
+    if not word:
+        raise_400(WordErrors.NoWordID)
+    return word
+
+
 @router.post("/sets", response_model=WordSetOut, status_code=200, responses=responses)
 def create_word_set(
     payload: WordSetInApi,
@@ -69,4 +82,27 @@ def create_word_set(
     word_set = common.create(db, WordSet, word_set_in)
     if not word_set:
         raise_400(WordErrors.CreationError)
+    return word_set
+
+
+@router.get(
+    "/sets/{set_id}/", response_model=WordSetOut, status_code=200, responses=responses
+)
+def get_word_set(
+    set_id: int,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> WordSet | None:
+    word_set = words.read_set_by_id(db, set_id)
+    if not word_set:
+        if current_user.is_admin:
+            raise_400(WordErrors.NoSetID)
+        else:
+            raise_400(WordErrors.NoRightsForUser)
+    else:
+        owner_id = word_set.owner_id
+        if current_user.id != owner_id:
+            if not current_user.is_admin:
+                raise_400(WordErrors.NoRightsForUser)
+
     return word_set

@@ -45,7 +45,7 @@ class WordSet(WordSetBase, table=True):  # type: ignore
     __tablename__ = "word_set"
 
     id: int = Field(primary_key=True)
-    words: list[Word] = Relationship(back_populates="sets")
+    words: list[Word] | None = Relationship(back_populates="sets")
 
     owner: "User" = Relationship(back_populates="word_sets")
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -65,3 +65,4 @@ class WordSetUpdate(WordSetBase):
 
 class WordSetOut(WordSetBase):
     id: int
+    words: list[Word] | None
