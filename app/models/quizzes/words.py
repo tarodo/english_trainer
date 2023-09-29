@@ -16,9 +16,7 @@ class WordBase(SQLModel):
 class Word(WordBase, table=True):  # type: ignore
     id: int = Field(primary_key=True)
 
-    set: "WordSet" = Relationship(
-        back_populates="words", sa_relationship_kwargs={"cascade": "delete"}
-    )
+    set: "WordSet" = Relationship(back_populates="words")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -47,7 +45,9 @@ class WordSet(WordSetBase, table=True):  # type: ignore
     __tablename__ = "word_set"
 
     id: int = Field(primary_key=True)
-    words: list[Word] | None = Relationship(back_populates="sets")
+    words: list[Word] | None = Relationship(
+        back_populates="set", sa_relationship_kwargs={"cascade": "delete"}
+    )
 
     owner: "User" = Relationship(back_populates="word_sets")
     created_at: datetime = Field(default_factory=datetime.utcnow)

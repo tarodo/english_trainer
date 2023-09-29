@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 
 from fastapi import APIRouter, Depends
@@ -20,6 +21,8 @@ from app.models import (
 )
 
 router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 class WordErrors(Enum):
@@ -63,7 +66,7 @@ def get_word(
     return word
 
 
-@router.delete("/{words_id}/", status_code=200, responses=responses)
+@router.delete("/{word_id}/", response_model=None, status_code=200, responses=responses)
 def remove_word(
     word_id: int,
     current_user: User = Depends(deps.get_current_user),
@@ -124,7 +127,9 @@ def get_word_set(
     return word_set
 
 
-@router.delete("/{set_id}/", status_code=200, responses=responses)
+@router.delete(
+    "/sets/{set_id}/", response_model=None, status_code=200, responses=responses
+)
 def remove_word_set(
     set_id: int,
     current_user: User = Depends(deps.get_current_user),
