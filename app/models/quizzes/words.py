@@ -68,3 +68,8 @@ class WordSetUpdate(WordSetBase):
 class WordSetOut(WordSetBase):
     id: int
     words: list[Word] | None
+
+
+class WordSetQuizz(SQLModel):
+    title: str
+    words: list[Word] | None

@@ -1,4 +1,5 @@
 import logging
+import random
 from enum import Enum
 
 from fastapi import APIRouter, Depends
@@ -17,6 +18,7 @@ from app.models import (
     WordSetInApi,
     WordSetInDB,
     WordSetOut,
+    WordSetQuizz,
     responses,
 )
 
@@ -143,3 +145,28 @@ def remove_word_set(
             raise_400(WordErrors.NoRightsForUser)
     else:
         words.remove_set(db, word_set)
+
+
+@router.get(
+    "/sets/quizz/{set_id}/{count}/",
+    response_model=WordSetQuizz,
+    status_code=200,
+    responses=responses,
+)
+def get_word_set_quizz(
+    set_id: int,
+    count: int = 5,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> WordSetQuizz | None:
+    word_set = words.read_set_by_id(db, set_id)
+    if not word_set:
+        if current_user.is_admin:
+            return raise_400(WordErrors.NoSetID)
+        else:
+            return raise_400(WordErrors.NoRightsForUser)
+    quizz_words = []
+    if word_set.words:
+        quizz_words = random.sample(word_set.words, min(count, len(word_set.words)))
+    title = word_set.title
+    return WordSetQuizz(title=title, words=quizz_words)

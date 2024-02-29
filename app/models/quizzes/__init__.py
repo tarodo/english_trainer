@@ -9,4 +9,5 @@ from .words import (
     WordSetOut,
     WordSetUpdate,
     WordUpdate,
+    WordSetQuizz,
 )

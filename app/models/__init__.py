@@ -9,6 +9,7 @@ from .quizzes import (
     WordSetOut,
     WordSetUpdate,
     WordUpdate,
+    WordSetQuizz,
 )
 from .tools import responses
 from .users import User, UserIn, UserOut, UserUpdate
