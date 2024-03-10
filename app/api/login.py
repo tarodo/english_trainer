@@ -18,6 +18,7 @@ from app.models import User
 
 class LoginErrors(Enum):
     IncorrectCredentials = "Incorrect email or password"
+    UserIsNotBot = "User is not a bot"
 
 
 router = APIRouter()
@@ -54,13 +55,13 @@ def login_access_token_by_bot(
     Login user by bot.
     """
     if not current_user.is_bot:
-        raise_400(LoginErrors.UserIsNotBot)
+        return raise_400(LoginErrors.UserIsNotBot)
 
-    student = students.read_by_tg_id(db, payload.tg_id)
-    if not student:
-        raise_400(LoginErrors.IncorrectCredentials)
+    user = users.read_by_tg_id(db, payload.tg_id)
+    if not user:
+        return raise_400(LoginErrors.IncorrectCredentials)
 
     return {
-        "access_token": security.create_access_token(student.user.id),
+        "access_token": security.create_access_token(user.id),
         "token_type": "bearer",
     }

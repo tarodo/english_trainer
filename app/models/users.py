@@ -11,7 +11,7 @@ class UserBase(SQLModel):
     email: EmailStr = Field(index=True, sa_column_kwargs={"unique": True})
     is_admin: bool = Field(default=False, nullable=False)
     is_bot: bool = Field(default=False, nullable=False)
-    tg_id: str = Field(nullable=True)
+    tg_id: str | None = Field(nullable=True)
 
 
 class User(UserBase, table=True):  # type: ignore

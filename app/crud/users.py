@@ -12,6 +12,13 @@ def read_by_email(db: Session, email: str) -> User | None:
     return user
 
 
+def read_by_tg_id(db: Session, tg_id: str) -> User | None:
+    """Read one user by Telegram ID"""
+    user_query = select(User).where(User.tg_id == tg_id)
+    user = db.exec(user_query).first()
+    return user
+
+
 def read_by_id(db: Session, user_id: int) -> User | None:
     """Read one user by id"""
     user_query = select(User).where(User.id == user_id)
