@@ -11,7 +11,9 @@ from app.api.tools import raise_400
 from app.core import security
 from app.core.config import settings
 from app.crud import users
-from app.models.token import Token
+from app.models import responses
+from app.models.token import Token, BotLoginPayload
+from app.models import User
 
 
 class LoginErrors(Enum):
@@ -38,5 +40,27 @@ def login_access_token(
         "access_token": security.create_access_token(
             user.id, expires_delta=access_token_expires
         ),
+        "token_type": "bearer",
+    }
+
+
+@router.post("/login/access-token-bot", response_model=Token, responses=responses)
+def login_access_token_by_bot(
+    payload: BotLoginPayload,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    """
+    Login user by bot.
+    """
+    if not current_user.is_bot:
+        raise_400(LoginErrors.UserIsNotBot)
+
+    student = students.read_by_tg_id(db, payload.tg_id)
+    if not student:
+        raise_400(LoginErrors.IncorrectCredentials)
+
+    return {
+        "access_token": security.create_access_token(student.user.id),
         "token_type": "bearer",
     }

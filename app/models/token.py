@@ -8,3 +8,7 @@ class Token(SQLModel):
 
 class TokenPayload(SQLModel):
     sub: int
+
+
+class BotLoginPayload(SQLModel):
+    tg_id: str

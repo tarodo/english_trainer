@@ -148,7 +148,7 @@ def remove_word_set(
 
 
 @router.get(
-    "/sets/quizz/{set_id}/{count}/",
+    "/quizz/{set_id}/",
     response_model=WordSetQuizz,
     status_code=200,
     responses=responses,

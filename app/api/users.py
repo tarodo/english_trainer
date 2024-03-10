@@ -24,11 +24,11 @@ def create_user(
 ) -> User:
     """Create One User"""
     if not current_user.is_admin:
-        raise_400(UsersErrors.NoRightsForUser)
+        return raise_400(UsersErrors.NoRightsForUser)
 
     old_user = users.read_by_email(db, payload.email)
     if old_user:
-        raise_400(UsersErrors.UserWithEmailExists)
+        return raise_400(UsersErrors.UserWithEmailExists)
 
     user = users.create(db, payload)
     return user
