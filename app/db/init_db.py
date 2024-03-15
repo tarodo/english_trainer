@@ -12,5 +12,6 @@ def init_db(db: Session) -> None:
             email=settings.FIRST_SUPERUSER,
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_admin=True,
+            is_bot=True,
         )
         user = users.create(db, payload=user_in)
