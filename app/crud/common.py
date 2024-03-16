@@ -27,6 +27,14 @@ def read_by_id(
     return elem
 
 
+def read_all(db: Session, model: Type[SQLModelWithId]) -> list[SQLModel] | None:
+    """Read all elements"""
+    logger.info(f"{type(model)=}")
+    elem = select(model)
+    elem = db.exec(elem).all()
+    return elem
+
+
 def read_by_field(
     db: Session, field: InstrumentedAttribute, value: object
 ) -> SQLModel | None:

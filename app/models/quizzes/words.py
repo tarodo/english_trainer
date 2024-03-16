@@ -70,6 +70,10 @@ class WordSetOut(WordSetBase):
     words: list[Word] | None
 
 
+class WordSetOutComp(WordSetBase):
+    id: int
+
+
 class WordSetQuizz(SQLModel):
     title: str
     words: list[Word] | None

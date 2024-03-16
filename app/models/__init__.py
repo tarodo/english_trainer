@@ -7,6 +7,7 @@ from .quizzes import (
     WordSetInApi,
     WordSetInDB,
     WordSetOut,
+    WordSetOutComp,
     WordSetUpdate,
     WordUpdate,
     WordSetQuizz,

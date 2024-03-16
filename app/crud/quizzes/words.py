@@ -34,8 +34,13 @@ def create_set(db: Session, payload: WordSetInDB) -> WordSet | None:
 
 
 def read_set_by_id(db: Session, word_set_id: int) -> WordSet | None:
-    """Read one word by id"""
+    """Read one word set"""
     return common.read_by_id(db, WordSet, word_set_id)
+
+
+def read_set_all(db: Session) -> list[WordSet] | None:
+    """Read all word sets"""
+    return common.read_all(db, WordSet)
 
 
 def remove_set(db: Session, db_obj: WordSet) -> WordSet:

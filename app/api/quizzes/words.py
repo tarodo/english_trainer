@@ -18,6 +18,7 @@ from app.models import (
     WordSetInApi,
     WordSetInDB,
     WordSetOut,
+    WordSetOutComp,
     WordSetQuizz,
     responses,
 )
@@ -54,6 +55,18 @@ def create_word(
     if not word:
         raise_400(WordErrors.CreationError)
     return word
+
+
+@router.get(
+    "/sets/", response_model=list[WordSetOutComp], status_code=200, responses=responses
+)
+def get_word_sets(
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> list[WordSet] | None:
+    word_sets = words.read_set_all(db)
+    logger.info(f"{word_sets=}")
+    return word_sets
 
 
 @router.get("/{word_id}/", response_model=WordOut, status_code=200, responses=responses)
