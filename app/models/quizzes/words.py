@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 class WordBase(SQLModel):
     word: str = Field(..., min_length=1)
     translate: str = Field(..., min_length=1)
+    example: str | None = Field(None)
     set_id: int = Field(foreign_key="word_set.id")
 
 
