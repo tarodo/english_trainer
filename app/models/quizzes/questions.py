@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -11,6 +11,8 @@ class QuestionAnswerBase(SQLModel):
     answer: str = Field(..., min_length=1)
     is_correct: bool = Field(...)
     question_id: int = Field(foreign_key="question.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class QuestionAnswer(QuestionAnswerBase, table=True):
@@ -44,7 +46,8 @@ class Question(QuestionBase, table=True):  # type: ignore
     id: int = Field(primary_key=True)
 
     set: "QuestionSet" = Relationship(back_populates="questions")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class QuestionInApi(QuestionBase):
@@ -77,7 +80,8 @@ class QuestionSet(QuestionSetBase, table=True):  # type: ignore
     )
 
     owner: "User" = Relationship(back_populates="question_sets")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class QuestionSetInApi(QuestionSetBase):

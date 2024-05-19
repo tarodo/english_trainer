@@ -1,9 +1,10 @@
 import logging
 
+import random
 from sqlmodel import Session
 
 from app.crud import common
-from app.models import Word, WordInDB, WordSet, WordSetInDB, WordUpdate
+from app.models import Word, WordInDB, WordSet, WordSetInDB, WordUpdate, WordQuizz
 
 logger = logging.getLogger(__name__)
 
@@ -46,3 +47,20 @@ def read_set_all(db: Session) -> list[WordSet] | None:
 def remove_set(db: Session, db_obj: WordSet) -> WordSet:
     """Remove word set from DB"""
     return common.remove(db, db_obj)
+
+
+def collect_quizz(word_set: WordSet, words_cnt: int) -> list[WordQuizz]:
+    result = []
+    if word_set.words:
+        quizz_words: list[Word] = random.sample(
+            word_set.words, min(words_cnt, len(word_set.words))
+        )
+        for one_word in quizz_words:
+            wrong_words = random.sample(list(set(quizz_words) - {one_word}), 3)
+            one_word_quiz = WordQuizz(
+                word=one_word.word,
+                translate=one_word.translate,
+                wrong_words=wrong_words,
+            )
+            result.append(one_word_quiz)
+    return result

@@ -20,6 +20,14 @@ class Word(WordBase, table=True):  # type: ignore
     set: "WordSet" = Relationship(back_populates="words")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        if isinstance(other, Word):
+            return self.id == other.id
+        return False
+
 
 class WordInApi(WordBase):
     pass
@@ -75,6 +83,12 @@ class WordSetOutComp(WordSetBase):
     id: int
 
 
+class WordQuizz(SQLModel):
+    word: str
+    translate: str
+    wrong_words: list[Word]
+
+
 class WordSetQuizz(SQLModel):
     title: str
-    words: list[Word] | None
+    words: list[WordQuizz] | None

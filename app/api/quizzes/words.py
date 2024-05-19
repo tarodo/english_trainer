@@ -178,8 +178,6 @@ def get_word_set_quizz(
             return raise_400(WordErrors.NoSetID)
         else:
             return raise_400(WordErrors.NoRightsForUser)
-    quizz_words = []
-    if word_set.words:
-        quizz_words = random.sample(word_set.words, min(count, len(word_set.words)))
+    quizz_words = words.collect_quizz(word_set, count)
     title = word_set.title
     return WordSetQuizz(title=title, words=quizz_words)

@@ -11,4 +11,5 @@ from .words import (
     WordSetUpdate,
     WordUpdate,
     WordSetQuizz,
+    WordQuizz,
 )
