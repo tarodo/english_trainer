@@ -11,11 +11,11 @@ class WordBase(SQLModel):
     word: str = Field(..., min_length=1)
     translate: str = Field(..., min_length=1)
     example: str | None = Field(None)
-    set_id: int = Field(foreign_key="word_set.id")
 
 
 class Word(WordBase, table=True):  # type: ignore
     id: int = Field(primary_key=True)
+    set_id: int = Field(foreign_key="word_set.id")
 
     set: "WordSet" = Relationship(back_populates="words")
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -34,7 +34,7 @@ class WordInApi(WordBase):
 
 
 class WordInDB(WordBase):
-    pass
+    set_id: int
 
 
 class WordUpdate(WordBase):

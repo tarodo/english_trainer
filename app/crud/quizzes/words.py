@@ -52,6 +52,7 @@ def remove_set(db: Session, db_obj: WordSet) -> WordSet:
 def collect_quizz(word_set: WordSet, words_cnt: int) -> list[WordQuizz]:
     result = []
     if word_set.words:
+        logger.info(f"{words_cnt=} :: {len(word_set.words)=}")
         quizz_words: list[Word] = random.sample(
             word_set.words, min(words_cnt, len(word_set.words))
         )

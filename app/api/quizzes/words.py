@@ -1,9 +1,10 @@
 import logging
-import random
 from enum import Enum
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
+from fastapi_pagination import Page, paginate
+from typing import Annotated
 
 from app.api import deps
 from app.api.tools import raise_400
@@ -19,6 +20,7 @@ from app.models import (
     WordSetInDB,
     WordSetOut,
     WordSetOutComp,
+    WordSetQuizz,
     WordSetQuizz,
     responses,
 )
@@ -36,37 +38,50 @@ class WordErrors(Enum):
     NoWordID = "There is no word with ID"
 
 
-@router.post("/", response_model=WordOut, status_code=200, responses=responses)
-def create_word(
-    payload: WordInApi,
-    current_user: User = Depends(deps.get_current_user),
-    db: Session = Depends(deps.get_db),
-) -> WordOut | None:
+@router.post("/sets/{set_id}/", response_model=WordOut | list[WordOut], status_code=200)
+def create_words(
+    payload: WordInApi | list[WordInApi],
+    set_id: int,
+    current_user: Annotated[User, Depends(deps.get_current_user)],
+    db: Annotated[Session, Depends(deps.get_db)],
+) -> WordOut | list[WordOut]:
     """
-    This endpoint allows for the creation of a new word entry in the database.
+    This endpoint allows for the creation of one or more new word entries in the database.
     """
-    word_set_id = payload.set_id
-    word_set = words.read_set_by_id(db, word_set_id)
+    word_set = words.read_set_by_id(db, set_id)
     if not word_set:
         raise_400(WordErrors.NoSetID)
 
-    word_in = WordInDB(**payload.dict())
+    if isinstance(payload, list):
+        words_out = []
+        for word_data in payload:
+            word_in = WordInDB(**word_data.dict(), set_id=set_id)
+            word = words.create(db, word_in)
+            if not word:
+                raise_400(WordErrors.CreationError)
+            words_out.append(word)
+        return words_out
+
+    word_in = WordInDB(**payload.dict(), set_id=set_id)
     word = words.create(db, word_in)
     if not word:
         raise_400(WordErrors.CreationError)
+
     return word
 
 
 @router.get(
-    "/sets/", response_model=list[WordSetOutComp], status_code=200, responses=responses
+    "/sets/",
+    response_model=Page[WordSetOutComp],
+    status_code=200,
+    responses=responses,
 )
 def get_word_sets(
     current_user: User = Depends(deps.get_current_user),
     db: Session = Depends(deps.get_db),
-) -> list[WordSet] | None:
+) -> Page[WordSet] | None:
     word_sets = words.read_set_all(db)
-    logger.info(f"{word_sets=}")
-    return word_sets
+    return paginate(word_sets)
 
 
 @router.get("/{word_id}/", response_model=WordOut, status_code=200, responses=responses)
@@ -97,7 +112,7 @@ def remove_word(
         words.remove(db, word)
 
 
-@router.post("/sets", response_model=WordSetOut, status_code=200, responses=responses)
+@router.post("/sets/", response_model=WordSetOut, status_code=200, responses=responses)
 def create_word_set(
     payload: WordSetInApi,
     current_user: User = Depends(deps.get_current_user),
@@ -161,7 +176,7 @@ def remove_word_set(
 
 
 @router.get(
-    "/quizz/{set_id}/",
+    "/sets/{set_id}/quizz/",
     response_model=WordSetQuizz,
     status_code=200,
     responses=responses,
