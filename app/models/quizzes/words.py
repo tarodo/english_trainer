@@ -85,6 +85,7 @@ class WordSetOutComp(WordSetBase):
 
 class WordQuizz(SQLModel):
     word: str
+    id: int
     translate: str
     wrong_words: list[Word]
 

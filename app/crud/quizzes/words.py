@@ -60,6 +60,7 @@ def collect_quizz(word_set: WordSet, words_cnt: int) -> list[WordQuizz]:
             wrong_words = random.sample(list(set(quizz_words) - {one_word}), 3)
             one_word_quiz = WordQuizz(
                 word=one_word.word,
+                id=one_word.id,
                 translate=one_word.translate,
                 wrong_words=wrong_words,
             )
